@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+LAPORAN.md
+Jenkinsfile
+Dockerfile.jenkins
+bukti
+tests
+__pycache__
+*.pyc
+.env
