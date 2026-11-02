@@ -1,0 +1,133 @@
+Started by user Katan raharja
+Obtained Jenkinsfile from git https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/python-crud-api-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-pat-readonly
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/python-crud-api-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/raharjakatan-collab/cloud-computing-crud-api.git # timeout=10
+Fetching upstream changes from https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/raharjakatan-collab/cloud-computing-crud-api.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 20d985f5314e9019af694372464820871fd79ec9 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 20d985f5314e9019af694372464820871fd79ec9 # timeout=10
+Commit message: "fix: restore API port 5000"
+ > git rev-list --no-walk 20d985f5314e9019af694372464820871fd79ec9 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (1. Checkout Code)
+[Pipeline] echo
+Checking out source code from GitHub
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-pat-readonly
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/python-crud-api-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/raharjakatan-collab/cloud-computing-crud-api.git # timeout=10
+Fetching upstream changes from https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/raharjakatan-collab/cloud-computing-crud-api.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 20d985f5314e9019af694372464820871fd79ec9 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 20d985f5314e9019af694372464820871fd79ec9 # timeout=10
+Commit message: "fix: restore API port 5000"
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ git rev-parse --short=7 HEAD
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Commit 20d985f, tag yang akan dideploy: e437bcf
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (2. Code Syntax Verification)
+Stage "2. Code Syntax Verification" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (3. Automated Tests)
+Stage "3. Automated Tests" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (4. Build Docker Image)
+Stage "4. Build Docker Image" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (5. Automated Deployment)
+[Pipeline] sh
++ docker image inspect python-crud-api:e437bcf --format Image python-crud-api:e437bcf = {{.Id}}
+Image python-crud-api:e437bcf = sha256:e87b4cde3094063c2818339095872e3b2d0853237dc3ffdd2f75ba45ce45504b
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ docker inspect production-api-container
++ docker inspect --format {{.Image}} production-api-container
++ PREVIOUS_IMAGE=sha256:5857092620b2ecb3df8dd08996d106e8cdaf7f7361eeeaa3a6b600889b1820ae
++ docker tag sha256:5857092620b2ecb3df8dd08996d106e8cdaf7f7361eeeaa3a6b600889b1820ae python-crud-api:previous
++ echo Image sebelumnya disimpan sebagai python-crud-api:previous
+Image sebelumnya disimpan sebagai python-crud-api:previous
++ docker stop production-api-container
+production-api-container
++ docker rm production-api-container
+production-api-container
++ docker volume create production-api-data
+production-api-data
++ docker run -d --name production-api-container --network jenkins-net -p 5000:5000 -v production-api-data:/var/lib/backend_data python-crud-api:e437bcf
+de9383002b18726e65de3e9916648714b58663c0b1c65b2ecd9b4ae60fb77447
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (6. Health Check)
+[Pipeline] sh
++ curl -fsS http://production-api-container:5000/health
+{"status": "active", "service": "Backend API"}+ echo
+
++ docker logs --tail 20 production-api-container
+Backend API listening on 0.0.0.0:5000
+[02/Nov/2026 17:22:55] "GET /health HTTP/1.1" 200 -
++ exit 0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline completed successfully. Berjalan: python-crud-api:e437bcf
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

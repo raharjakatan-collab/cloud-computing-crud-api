@@ -9,7 +9,7 @@
 | A. Pipeline | Selesai | Build #3 sampai #5 sukses, `bukti/console-build-3.txt` |
 | B. Webhook | Selesai | Build #4 dan #5 terpicu push, `bukti/jenkins-build-4-dari-webhook.jpg` |
 | C. Persistensi | Selesai | Tiga pesan bertahan setelah redeploy Jenkins, `bukti/uji-setelah-jenkins.txt` |
-| D. Pengembangan | Selesai, empat item | Lihat bagian Tugas D |
+| D. Pengembangan | Selesai, enam item | Lihat bagian Tugas D |
 
 ## Tugas A
 
@@ -32,7 +32,7 @@ Tunnel ngrok meneruskan `https://spotted-breeching-although.ngrok-free.dev` ke J
 
 Commit `313c0cc` di-push tanpa menekan Build Now. GitHub mencatat pengiriman sukses, log Jenkins menulis `Received PushEvent`, dan build #4 dimulai dengan keterangan `Started by GitHub push by raharjakatan-collab`. Push berikutnya memicu build #5 dengan cara yang sama. Riwayat pengiriman ada di `bukti/github-recent-deliveries.jpg`.
 
-ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui.
+ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui. Tunnel sudah dihentikan sebelum pengujian rollback, jadi build #7 sampai #10 dijalankan lewat Jenkins secara manual, bukan oleh webhook.
 
 ## Uji endpoint
 
@@ -68,7 +68,20 @@ Container adalah proses dengan lapisan tulis sementara, dan lapisan itu lenyap k
 | Frekuensi | Terus-menerus | Sekali per deploy |
 | Dampak gagal | Status `unhealthy` | Build gagal |
 
-**Tag commit SHA.** Image `python-crud-api:313c0cc` menunjuk langsung ke kode sumbernya, jadi tag tetap bermakna walau riwayat build Jenkins dibersihkan.
+**Tag commit SHA.** Image `python-crud-api:313c0cc` menunjuk langsung ke kode sumbernya, jadi tag tetap bermakna walau riwayat build Jenkins dibersihkan. Sejak build #7, container dijalankan dari tag SHA, bukan `latest`.
+
+**Rollback otomatis.** Sebelum container lama dihentikan, image yang sedang berjalan diberi tag `python-crud-api:previous`. Jika pipeline gagal setelah deploy, blok `post { failure }` menjalankan ulang image itu dan memeriksa `/health`. Jika kegagalan terjadi sebelum deploy, container produksi tidak disentuh.
+
+**Rollback manual.** Parameter `ROLLBACK_TO` diisi tag image lama lewat Build with Parameters. Tahap sintaks, test, dan build dilewati, lalu tag tersebut langsung dideploy. Tag yang tidak ada akan gagal lebih dulu pada `docker image inspect`, sebelum container lama dihentikan.
+
+| Build | Commit atau parameter | Hasil | Status |
+| --- | --- | --- | --- |
+| #7 | `e437bcf`, rollback ditambahkan | Container berjalan dari tag SHA | SUCCESS |
+| #8 | `de0d60e`, port sengaja diubah ke 5001 | Test dan build lolos, health check gagal 10 kali, rollback berhasil | FAILURE |
+| #9 | `20d985f`, port dikembalikan ke 5000 | Deployment dan health check berhasil | SUCCESS |
+| #10 | `ROLLBACK_TO=e437bcf` | Tiga tahap dilewati, image `e437bcf` berjalan dalam 8,8 detik | SUCCESS |
+
+Build #8 tetap berstatus FAILURE karena versi baru memang rusak. Layanan kembali sehat lewat `python-crud-api:previous`, dan `GET /messages` tetap mengembalikan 3 pesan setelah build #8 dan #10.
 
 ## Masalah yang ditemui
 
@@ -108,3 +121,6 @@ Container adalah proses dengan lapisan tulis sementara, dan lapisan itu lenyap k
 | Build dari push | `bukti/jenkins-build-4-dari-webhook.jpg` |
 | Output curl health dan CRUD | `bukti/hasil-uji-lokal.txt`, `bukti/uji-setelah-jenkins.txt` |
 | Persistensi setelah redeploy | `bukti/uji-setelah-jenkins.txt` |
+| Rollback otomatis | `bukti/console-build-8.txt` |
+| Rollback manual | `bukti/console-build-10.txt`, `bukti/jenkins-rollback-manual.jpg`, `bukti/jenkins-build-10-rollback.jpg` |
+| Daftar build dengan rollback | `bukti/jenkins-daftar-build-rollback.jpg` |
