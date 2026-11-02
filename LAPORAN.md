@@ -4,6 +4,8 @@
 
 **NIM:** 101012300394
 
+**Kelas:** BS1TT-47-REG-GAB02
+
 **Repository:** https://github.com/raharjakatan-collab/cloud-computing-crud-api
 
 ## Ringkasan
