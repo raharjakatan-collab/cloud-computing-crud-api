@@ -1,0 +1,179 @@
+Started by GitHub push by raharjakatan-collab
+Obtained Jenkinsfile from git https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/python-crud-api-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-pat-readonly
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/python-crud-api-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/raharjakatan-collab/cloud-computing-crud-api.git # timeout=10
+Fetching upstream changes from https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/raharjakatan-collab/cloud-computing-crud-api.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 93df5fa327b6d5f1a7231e6f037f65aae75569e6 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 93df5fa327b6d5f1a7231e6f037f65aae75569e6 # timeout=10
+Commit message: "test: verify webhook after authtoken rotation"
+ > git rev-list --no-walk 23b099dbf4ffcb291cfa9b9d404e711b12535d78 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (1. Checkout Code)
+[Pipeline] echo
+Checking out source code from GitHub
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-pat-readonly
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/python-crud-api-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/raharjakatan-collab/cloud-computing-crud-api.git # timeout=10
+Fetching upstream changes from https://github.com/raharjakatan-collab/cloud-computing-crud-api.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/raharjakatan-collab/cloud-computing-crud-api.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 93df5fa327b6d5f1a7231e6f037f65aae75569e6 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 93df5fa327b6d5f1a7231e6f037f65aae75569e6 # timeout=10
+Commit message: "test: verify webhook after authtoken rotation"
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ git rev-parse --short=7 HEAD
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Commit 93df5fa, tag yang akan dideploy: 93df5fa
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (2. Code Syntax Verification)
+[Pipeline] sh
++ python3 -m py_compile app.py
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (3. Automated Tests)
+[Pipeline] sh
++ python3 -m unittest discover -s tests -v
+test_create_adds_timestamp (test_api.APITestCase.test_create_adds_timestamp) ... [02/Nov/2026 17:34:24] "POST /messages HTTP/1.1" 201 -
+ok
+test_create_rejects_blank_message (test_api.APITestCase.test_create_rejects_blank_message) ... [02/Nov/2026 17:34:24] "POST /messages HTTP/1.1" 400 -
+ok
+test_create_rejects_invalid_json (test_api.APITestCase.test_create_rejects_invalid_json) ... [02/Nov/2026 17:34:25] "POST /messages HTTP/1.1" 400 -
+ok
+test_create_rejects_long_message (test_api.APITestCase.test_create_rejects_long_message) ... [02/Nov/2026 17:34:25] "POST /messages HTTP/1.1" 400 -
+ok
+test_create_rejects_non_object_json (test_api.APITestCase.test_create_rejects_non_object_json) ... [02/Nov/2026 17:34:26] "POST /messages HTTP/1.1" 400 -
+ok
+test_delete_removes_message (test_api.APITestCase.test_delete_removes_message) ... [02/Nov/2026 17:34:26] "POST /messages HTTP/1.1" 201 -
+[02/Nov/2026 17:34:26] "DELETE /messages?index=0 HTTP/1.1" 200 -
+[02/Nov/2026 17:34:26] "GET /messages HTTP/1.1" 200 -
+ok
+test_delete_unknown_index_returns_404 (test_api.APITestCase.test_delete_unknown_index_returns_404) ... [02/Nov/2026 17:34:27] "DELETE /messages?index=999 HTTP/1.1" 404 -
+ok
+test_get_by_index (test_api.APITestCase.test_get_by_index) ... [02/Nov/2026 17:34:27] "POST /messages HTTP/1.1" 201 -
+[02/Nov/2026 17:34:27] "POST /messages HTTP/1.1" 201 -
+[02/Nov/2026 17:34:27] "GET /messages/1 HTTP/1.1" 200 -
+ok
+test_get_by_non_integer_index_returns_400 (test_api.APITestCase.test_get_by_non_integer_index_returns_400) ... [02/Nov/2026 17:34:28] "GET /messages/abc HTTP/1.1" 400 -
+ok
+test_get_by_unknown_index_returns_404 (test_api.APITestCase.test_get_by_unknown_index_returns_404) ... [02/Nov/2026 17:34:28] "GET /messages/999 HTTP/1.1" 404 -
+ok
+test_health_is_active (test_api.APITestCase.test_health_is_active) ... [02/Nov/2026 17:34:29] "GET /health HTTP/1.1" 200 -
+ok
+test_unknown_path_returns_404 (test_api.APITestCase.test_unknown_path_returns_404) ... [02/Nov/2026 17:34:29] "GET /tidak-ada HTTP/1.1" 404 -
+ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.032s
+
+OK
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (4. Build Docker Image)
+[Pipeline] sh
++ docker build -t python-crud-api:12 -t python-crud-api:93df5fa -t python-crud-api:latest .
+
+
+
+
+
+
+
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (5. Automated Deployment)
+[Pipeline] sh
++ docker image inspect python-crud-api:93df5fa --format Image python-crud-api:93df5fa = {{.Id}}
+Image python-crud-api:93df5fa = sha256:73eb3c7970da562be3bd2d5d7d94ac114b8a62ce19c4d23d46e5b6726a0bdce6
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ docker inspect production-api-container
++ docker inspect --format {{.Image}} production-api-container
++ PREVIOUS_IMAGE=sha256:49964d246717ece387ec8338f931fcc5dd2c6625ae7c546d97a4db8063f8ae13
++ docker tag sha256:49964d246717ece387ec8338f931fcc5dd2c6625ae7c546d97a4db8063f8ae13 python-crud-api:previous
++ echo Image sebelumnya disimpan sebagai python-crud-api:previous
+Image sebelumnya disimpan sebagai python-crud-api:previous
++ docker stop production-api-container
+production-api-container
++ docker rm production-api-container
+production-api-container
++ docker volume create production-api-data
+production-api-data
++ docker run -d --name production-api-container --network jenkins-net -p 5000:5000 -v production-api-data:/var/lib/backend_data python-crud-api:93df5fa
+cb4439189e3ed857ccbfdfe5182d1de075ecaebba998621198637141acffc0b3
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (6. Health Check)
+[Pipeline] sh
++ curl -fsS http://production-api-container:5000/health
+curl: (7) Failed to connect to production-api-container port 5000 after 0 ms: Could not connect to server
++ echo Menunggu API siap (percobaan 1/10)
+Menunggu API siap (percobaan 1/10)
++ sleep 2
++ curl -fsS http://production-api-container:5000/health
+{"status": "active", "service": "Backend API"}+ echo
+
++ docker logs --tail 20 production-api-container
+Backend API listening on 0.0.0.0:5000
+[02/Nov/2026 17:34:38] "GET /health HTTP/1.1" 200 -
++ exit 0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline completed successfully. Berjalan: python-crud-api:93df5fa
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

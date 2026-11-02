@@ -36,7 +36,7 @@ Tunnel ngrok meneruskan `https://spotted-breeching-although.ngrok-free.dev` ke J
 
 Commit `313c0cc` di-push tanpa menekan Build Now. GitHub mencatat pengiriman sukses, log Jenkins menulis `Received PushEvent`, dan build #4 dimulai dengan keterangan `Started by GitHub push by raharjakatan-collab`. Push berikutnya memicu build #5 dengan cara yang sama. Riwayat pengiriman ada di `bukti/github-recent-deliveries.jpg`. Delivery push untuk build #5 dibalas HTTP 200 dalam 0,68 detik, seperti terlihat pada `bukti/github-response-200.jpg`.
 
-ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui. Tunnel sudah dihentikan sebelum pengujian rollback, jadi build #7 sampai #10 dijalankan lewat Jenkins secara manual, bukan oleh webhook.
+ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui. Tunnel sudah dihentikan sebelum pengujian rollback, jadi build #7 sampai #11 dijalankan lewat Jenkins secara manual, bukan oleh webhook. Enam pengiriman merah pada Recent Deliveries terjadi pada periode tersebut. Setelah authtoken diganti dan tunnel dinyalakan lagi, push commit `93df5fa` kembali memicu build #12 secara otomatis, seperti terlihat pada `bukti/github-recent-deliveries-akhir.jpg`.
 
 ## Uji endpoint
 
@@ -93,7 +93,7 @@ Build #8 tetap berstatus FAILURE karena versi baru memang rusak. Layanan kembali
 
 **ngrok Windows tidak bisa dipakai.** Versi dari winget, 3.3.1, ditolak karena akun butuh minimal 3.28.0. Setelah `ngrok update` ke 3.39.13, Windows Defender menandai file itu sebagai `Trojan:Win32/Kepavll!rfn` dan memblokirnya. Hasil deteksi ini tidak diverifikasi lebih lanjut dan Defender tidak diubah. Tunnel dijalankan dari image Docker resmi di network `jenkins-net`, dengan target `jenkins-server:8080`.
 
-**Token sempat muncul di chat.** Token GitHub pertama dihapus dan diganti token baru yang langsung disimpan di Jenkins Credentials, sesuai aturan pada bagian 5.4 panduan.
+**Token sempat muncul di chat.** Token GitHub pertama dihapus dan diganti token baru yang langsung disimpan di Jenkins Credentials, sesuai aturan pada bagian 5.4 panduan. Authtoken ngrok juga diganti dengan Rotate authtoken.
 
 **Health check `localhost` tidak bisa dipakai.** Panduan memakai `curl http://localhost:5000/health`, padahal perintah itu berjalan di dalam container Jenkins, tempat tidak ada API. Solusinya, API dipasang ke network `jenkins-net` dan dipanggil dengan nama container, ditambah percobaan ulang karena API butuh beberapa detik untuk siap.
 
@@ -121,7 +121,7 @@ Build #8 tetap berstatus FAILURE karena versi baru memang rusak. Layanan kembali
 | --- | --- |
 | Daftar build sukses | `bukti/jenkins-daftar-build.jpg` |
 | Console Output | `bukti/console-build-3.txt`, `-4.txt`, `-5.txt` |
-| Recent Deliveries webhook | `bukti/github-recent-deliveries.jpg`, `bukti/github-response-200.jpg` |
+| Recent Deliveries webhook | `bukti/github-recent-deliveries.jpg`, `bukti/github-recent-deliveries-akhir.jpg`, `bukti/github-response-200.jpg` |
 | Build dari push | `bukti/jenkins-build-4-dari-webhook.jpg` |
 | Output curl health dan CRUD | `bukti/hasil-uji-lokal.txt`, `bukti/uji-setelah-jenkins.txt` |
 | Persistensi setelah redeploy | `bukti/uji-setelah-jenkins.txt` |
