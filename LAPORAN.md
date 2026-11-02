@@ -6,14 +6,14 @@
 
 | Tugas | Kondisi | Bukti |
 | --- | --- | --- |
-| A. Pipeline | Kode lengkap, belum berjalan di Jenkins | Perintah pipeline lolos di luar Jenkins |
-| B. Webhook | Belum dikerjakan | Butuh login GitHub dan authtoken ngrok |
-| C. Persistensi | Terbukti di luar Jenkins | Dua pesan bertahan setelah redeploy |
+| A. Pipeline | Selesai | Build #3 sampai #5 sukses, `bukti/console-build-3.txt` |
+| B. Webhook | Selesai | Build #4 dan #5 terpicu push, `bukti/jenkins-build-4-dari-webhook.jpg` |
+| C. Persistensi | Selesai | Tiga pesan bertahan setelah redeploy Jenkins, `bukti/uji-setelah-jenkins.txt` |
 | D. Pengembangan | Selesai, empat item | Lihat bagian Tugas D |
 
-Semua angka di bawah berasal dari commit `4fb1ce6`, dengan log lengkap di `bukti/hasil-uji-lokal.txt`. Perintah `sh` pada `Jenkinsfile` dijalankan di container sementara dari image Jenkins, jadi hasil ini bukan build Jenkins.
-
 ## Tugas A
+
+Jenkins mengambil kode dari repository privat memakai credential `github-pat-readonly`. Tokennya berjenis Fine-grained, hanya untuk repository ini, dengan izin `Contents: Read-only` dan `Metadata: Read-only`.
 
 Pipeline berisi enam stage:
 
@@ -24,9 +24,19 @@ Pipeline berisi enam stage:
 5. Deployment ke `production-api-container`
 6. Health check
 
-Dua putaran pipeline selesai dengan exit code 0 dan 12 test lulus pada keduanya.
+Build #3 dijalankan dengan Build Now dan selesai `SUCCESS`, 12 test lulus. Image `python-crud-api:3`, `python-crud-api:16c6592`, dan `latest` terbentuk. Daftar build ada di `bukti/jenkins-daftar-build.jpg`.
+
+## Tugas B
+
+Tunnel ngrok meneruskan `https://spotted-breeching-although.ngrok-free.dev` ke Jenkins, dan webhook GitHub mengarah ke path `/github-webhook/` dengan event push saja.
+
+Commit `313c0cc` di-push tanpa menekan Build Now. GitHub mencatat pengiriman sukses, log Jenkins menulis `Received PushEvent`, dan build #4 dimulai dengan keterangan `Started by GitHub push by raharjakatan-collab`. Push berikutnya memicu build #5 dengan cara yang sama. Riwayat pengiriman ada di `bukti/github-recent-deliveries.jpg`.
+
+ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui.
 
 ## Uji endpoint
+
+Tabel ini berasal dari deploy manual commit `4fb1ce6`, dengan log di `bukti/hasil-uji-lokal.txt`. Health, input kosong, dan delete index tidak ada diuji ulang pada container hasil deploy Jenkins, dengan hasil yang sama.
 
 | Permintaan | Hasil |
 | --- | --- |
@@ -40,7 +50,7 @@ Dua putaran pipeline selesai dengan exit code 0 dan 12 test lulus pada keduanya.
 
 ## Tugas C
 
-Dua pesan disimpan, lalu pipeline dijalankan lagi. ID container berubah dari `b84a067799a1` menjadi `fde1193dd8e4`, sementara kedua pesan kembali dengan nilai `created_at` yang sama persis.
+Tiga pesan tersimpan sebelum build #5: dua dari uji awal dan satu pesan `Pesan dibuat sebelum redeploy Jenkins`. Build #5 mengganti container dari `f828aa9f143d` menjadi `8843b391f34b`, dan `GET /messages` tetap mengembalikan ketiganya dengan nilai `created_at` yang sama persis.
 
 Container adalah proses dengan lapisan tulis sementara, dan lapisan itu lenyap ketika container dihapus. Named volume adalah penyimpanan terpisah yang dikelola Docker. Karena `messages.json` berada di volume, mengganti container tidak menyentuh datanya.
 
@@ -58,11 +68,15 @@ Container adalah proses dengan lapisan tulis sementara, dan lapisan itu lenyap k
 | Frekuensi | Terus-menerus | Sekali per deploy |
 | Dampak gagal | Status `unhealthy` | Build gagal |
 
-**Tag commit SHA.** Image `python-crud-api:4fb1ce6` menunjuk langsung ke kode sumbernya, jadi tag tetap bermakna walau riwayat build Jenkins dibersihkan.
+**Tag commit SHA.** Image `python-crud-api:313c0cc` menunjuk langsung ke kode sumbernya, jadi tag tetap bermakna walau riwayat build Jenkins dibersihkan.
 
 ## Masalah yang ditemui
 
-**Jenkins tidak bisa memakai Docker.** `docker ps` dari `jenkins-server` gagal dengan `permission denied` karena socket hanya dapat diakses `root`, sedangkan Jenkins berjalan sebagai user `jenkins`. Masalah ini belum diperbaiki. Perbaikannya adalah `chgrp jenkins` pada socket, dan pipeline Jenkins tidak akan berjalan sebelum itu.
+**Jenkins tidak bisa memakai Docker.** `docker ps` dari `jenkins-server` gagal dengan `permission denied` karena socket hanya dapat diakses `root`, sedangkan Jenkins berjalan sebagai user `jenkins`. Perbaikannya adalah `chgrp jenkins` pada socket. Perubahan ini perlu diulang jika Docker Desktop dimulai ulang.
+
+**ngrok Windows tidak bisa dipakai.** Versi dari winget, 3.3.1, ditolak karena akun butuh minimal 3.28.0. Setelah `ngrok update` ke 3.39.13, Windows Defender menandai file itu sebagai `Trojan:Win32/Kepavll!rfn` dan memblokirnya. Hasil deteksi ini tidak diverifikasi lebih lanjut dan Defender tidak diubah. Tunnel dijalankan dari image Docker resmi di network `jenkins-net`, dengan target `jenkins-server:8080`.
+
+**Token sempat muncul di chat.** Token GitHub pertama dihapus dan diganti token baru yang langsung disimpan di Jenkins Credentials, sesuai aturan pada bagian 5.4 panduan.
 
 **Health check `localhost` tidak bisa dipakai.** Panduan memakai `curl http://localhost:5000/health`, padahal perintah itu berjalan di dalam container Jenkins, tempat tidak ada API. Solusinya, API dipasang ke network `jenkins-net` dan dipanggil dengan nama container, ditambah percobaan ulang karena API butuh beberapa detik untuk siap.
 
@@ -84,9 +98,13 @@ Container adalah proses dengan lapisan tulis sementara, dan lapisan itu lenyap k
 
 **Deploy sukses, health check gagal.** Biarkan build berstatus gagal, baca log container, lalu jalankan image dari tag sebelumnya dengan volume yang sama. Setelah layanan pulih, perbaiki penyebabnya lewat commit baru.
 
-## Bukti yang masih harus dikumpulkan
+## Daftar bukti
 
-- [ ] Screenshot build sukses dan Console Output Jenkins
-- [ ] Recent Deliveries webhook GitHub
-- [ ] Build yang terpicu oleh push
-- [ ] Redeploy lewat Jenkins dengan data tetap ada
+| Bukti | File |
+| --- | --- |
+| Daftar build sukses | `bukti/jenkins-daftar-build.jpg` |
+| Console Output | `bukti/console-build-3.txt`, `-4.txt`, `-5.txt` |
+| Recent Deliveries webhook | `bukti/github-recent-deliveries.jpg` |
+| Build dari push | `bukti/jenkins-build-4-dari-webhook.jpg` |
+| Output curl health dan CRUD | `bukti/hasil-uji-lokal.txt`, `bukti/uji-setelah-jenkins.txt` |
+| Persistensi setelah redeploy | `bukti/uji-setelah-jenkins.txt` |

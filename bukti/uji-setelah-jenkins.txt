@@ -51,3 +51,6 @@ Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS
 Access-Control-Allow-Headers: Content-Type
 
 {"error": "Message not found"}
+
+## Sesudah redeploy Jenkins build #5: container f828aa9f143d -> 8843b391f34b
+{"messages": [{"message": "Pesan pertama dari praktikum", "created_at": "2026-11-02T16:33:31.271279+00:00"}, {"message": "Pesan kedua", "created_at": "2026-11-02T16:33:31.317932+00:00"}, {"message": "Pesan dibuat sebelum redeploy Jenkins", "created_at": "2026-11-02T17:11:24.773624+00:00"}], "total": 3}
