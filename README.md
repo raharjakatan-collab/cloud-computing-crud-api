@@ -31,3 +31,5 @@ python -m unittest discover -s tests -v
 `Jenkinsfile` menjalankan checkout, syntax check, test, build image, deploy, dan health check. Image diberi tag nomor build, commit SHA, dan `latest`.
 
 Jenkins berjalan di container memakai image dari `Dockerfile.jenkins` dan memasang Docker socket host, sehingga konfigurasi ini hanya untuk mesin lab. Token disimpan di Jenkins Credentials dengan ID `github-pat-readonly`, tidak pernah di repository.
+
+Webhook test 2026-11-02T17:10:28Z
