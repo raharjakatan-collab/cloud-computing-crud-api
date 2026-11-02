@@ -109,7 +109,7 @@ Build #8 tetap berstatus FAILURE karena versi baru memang rusak. Layanan kembali
 
 **CI dan CD.** CI mencakup sintaks, test, dan build, yaitu tahap yang menilai perubahan. CD mencakup deployment dan health check, yaitu tahap yang menerapkan perubahan ke layanan.
 
-**Deploy sukses, health check gagal.** Biarkan build berstatus gagal, baca log container, lalu jalankan image dari tag sebelumnya dengan volume yang sama. Setelah layanan pulih, perbaiki penyebabnya lewat commit baru.
+**Deploy sukses, health check gagal.** Build dibiarkan gagal, dan layanan dipulihkan dengan image sebelumnya. Pipeline ini melakukannya otomatis, seperti terbukti pada build #8. Setelah itu baca `docker logs` dari versi yang gagal, lalu perbaiki penyebabnya lewat commit baru.
 
 ## Daftar bukti
 
