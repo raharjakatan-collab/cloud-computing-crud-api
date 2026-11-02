@@ -1,5 +1,9 @@
 # Laporan Praktikum CI/CD
 
+**Nama:** Katan Raharja
+
+**NIM:** 101012300394
+
 **Repository:** https://github.com/raharjakatan-collab/cloud-computing-crud-api
 
 ## Ringkasan
@@ -30,7 +34,7 @@ Build #3 dijalankan dengan Build Now dan selesai `SUCCESS`, 12 test lulus. Image
 
 Tunnel ngrok meneruskan `https://spotted-breeching-although.ngrok-free.dev` ke Jenkins, dan webhook GitHub mengarah ke path `/github-webhook/` dengan event push saja.
 
-Commit `313c0cc` di-push tanpa menekan Build Now. GitHub mencatat pengiriman sukses, log Jenkins menulis `Received PushEvent`, dan build #4 dimulai dengan keterangan `Started by GitHub push by raharjakatan-collab`. Push berikutnya memicu build #5 dengan cara yang sama. Riwayat pengiriman ada di `bukti/github-recent-deliveries.jpg`.
+Commit `313c0cc` di-push tanpa menekan Build Now. GitHub mencatat pengiriman sukses, log Jenkins menulis `Received PushEvent`, dan build #4 dimulai dengan keterangan `Started by GitHub push by raharjakatan-collab`. Push berikutnya memicu build #5 dengan cara yang sama. Riwayat pengiriman ada di `bukti/github-recent-deliveries.jpg`. Delivery push untuk build #5 dibalas HTTP 200 dalam 0,68 detik, seperti terlihat pada `bukti/github-response-200.jpg`.
 
 ngrok dijalankan dari image Docker resmi `ngrok/ngrok`, bukan dari agent Windows. Alasannya ada di bagian Masalah yang ditemui. Tunnel sudah dihentikan sebelum pengujian rollback, jadi build #7 sampai #10 dijalankan lewat Jenkins secara manual, bukan oleh webhook.
 
@@ -117,7 +121,7 @@ Build #8 tetap berstatus FAILURE karena versi baru memang rusak. Layanan kembali
 | --- | --- |
 | Daftar build sukses | `bukti/jenkins-daftar-build.jpg` |
 | Console Output | `bukti/console-build-3.txt`, `-4.txt`, `-5.txt` |
-| Recent Deliveries webhook | `bukti/github-recent-deliveries.jpg` |
+| Recent Deliveries webhook | `bukti/github-recent-deliveries.jpg`, `bukti/github-response-200.jpg` |
 | Build dari push | `bukti/jenkins-build-4-dari-webhook.jpg` |
 | Output curl health dan CRUD | `bukti/hasil-uji-lokal.txt`, `bukti/uji-setelah-jenkins.txt` |
 | Persistensi setelah redeploy | `bukti/uji-setelah-jenkins.txt` |
