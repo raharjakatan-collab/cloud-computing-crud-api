@@ -148,4 +148,4 @@ class APIHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     print("Backend API listening on 0.0.0.0:5000", flush=True)
-    ThreadingHTTPServer(("0.0.0.0", 5000), APIHandler).serve_forever()
+    ThreadingHTTPServer(("0.0.0.0", 5001), APIHandler).serve_forever()
